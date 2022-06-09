@@ -4,17 +4,21 @@ from .models import Category,Product,File
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('title','description','avatar')
+        fields = ('id','title','description','avatar')
 
 class FIleSerializer(serializers.ModelSerializer):
+    file_type = serializers.SerializerMethodField()
     class Meta:
         model = File
-        fields = ('title','file')
+        fields = ('id','title','file','file_type')
 
-class ProductSerializer(serializers.ModelSerializer):
+    def get_file_type(self,obj):
+        return obj.get_file_type_display()
+
+class ProductSerializer(serializers.HyperlinkedModelSerializer):
     categories = CategorySerializer(many=True)
-    file_set = FIleSerializer(many=True)
+    files = FIleSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ('title','description','avatar','categories','file_set')
+        fields = ('id','title','description','avatar','categories','files','url')
